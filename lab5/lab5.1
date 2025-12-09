@@ -1,0 +1,49 @@
+from collections import deque
+import time
+
+class AttractionQueue:
+    def __init__(self):
+        self.queue = deque()
+        self.delays = []  
+    def arrive(self, visitor_name):
+        """Додає відвідувача з накопичуваною затримкою"""
+        if len(self.delays) == 0:
+            delay = 1
+        elif len(self.delays) == 1:
+            delay = 2
+        elif len(self.delays) == 2:
+            delay = 3
+        else:
+            delay = self.delays[-1] + self.delays[-2]  
+
+        print(f"Чекаємо {delay} секунд перед додаванням {visitor_name}...")
+        time.sleep(delay)
+
+        self.queue.append(visitor_name)
+        self.delays.append(delay)
+        print(f"{visitor_name} став у чергу.")
+
+    def serve(self):
+        if self.queue:
+            visitor = self.queue.popleft()
+            print(f"{visitor} заходить на атракціон!")
+        else:
+            print("Черга порожня, немає кого обслуговувати.")
+
+    def show_queue(self):
+        if self.queue:
+            print("Поточна черга:", list(self.queue))
+        else:
+            print("Черга порожня.")
+
+
+if __name__ == "__main__":
+    attraction = AttractionQueue()
+
+    attraction.arrive("Олена") 
+    attraction.arrive("Петро") 
+    attraction.arrive("Марія") 
+    attraction.arrive("Іван")
+    attraction.arrive("Софія")  
+
+    attraction.show_queue()

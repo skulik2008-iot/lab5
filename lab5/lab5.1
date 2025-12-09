@@ -1,49 +1,74 @@
-from collections import deque
-import time
+import random
+from enum import Enum
 
-class AttractionQueue:
+# Enum для смаку
+class Taste(Enum):
+    SWEET = "Sweet"
+    SOUR = "Sour"
+    NEUTRAL = "Neutral"
+
+# Клас Fruit
+class Fruit:
+    def __init__(self, name: str, size: str, color: str, taste: Taste):
+        self.name = name
+        self.size = size
+        self.color = color
+        self.taste = taste
+
+    def __repr__(self):
+        return f"{self.name} ({self.color}, {self.size}, {self.taste.value})"
+
+# Enum Topping з полем taste
+class Topping(Enum):
+    HONEY = Taste.SWEET
+    LEMON_JUICE = Taste.SOUR
+    YOGURT = Taste.NEUTRAL
+    CHOCOLATE = Taste.SWEET
+
+# Клас FruitSalad
+class FruitSalad:
     def __init__(self):
-        self.queue = deque()
-        self.delays = []  
-    def arrive(self, visitor_name):
-        """Додає відвідувача з накопичуваною затримкою"""
-        if len(self.delays) == 0:
-            delay = 1
-        elif len(self.delays) == 1:
-            delay = 2
-        elif len(self.delays) == 2:
-            delay = 3
+        self.fruits = []
+        self.topping = None
+
+    def add_fruit(self, fruit: Fruit):
+        self.fruits.append(fruit)
+
+    # Метод вибору топінгу залежно від смаку фруктів
+    def choose_topping(self):
+        sweet_count = sum(1 for f in self.fruits if f.taste == Taste.SWEET)
+        sour_count = sum(1 for f in self.fruits if f.taste == Taste.SOUR)
+        neutral_count = sum(1 for f in self.fruits if f.taste == Taste.NEUTRAL)
+
+        if sweet_count > sour_count and sweet_count > neutral_count:
+            self.topping = Topping.CHOCOLATE
+        elif sour_count > sweet_count and sour_count > neutral_count:
+            self.topping = Topping.LEMON_JUICE
         else:
-            delay = self.delays[-1] + self.delays[-2]  
+            self.topping = Topping.YOGURT
 
-        print(f"Чекаємо {delay} секунд перед додаванням {visitor_name}...")
-        time.sleep(delay)
+    # Метод перемішування інгредієнтів
+    def mix_ingredients(self):
+        random.shuffle(self.fruits)
 
-        self.queue.append(visitor_name)
-        self.delays.append(delay)
-        print(f"{visitor_name} став у чергу.")
-
-    def serve(self):
-        if self.queue:
-            visitor = self.queue.popleft()
-            print(f"{visitor} заходить на атракціон!")
-        else:
-            print("Черга порожня, немає кого обслуговувати.")
-
-    def show_queue(self):
-        if self.queue:
-            print("Поточна черга:", list(self.queue))
-        else:
-            print("Черга порожня.")
+    def __repr__(self):
+        return f"FruitSalad(fruits={self.fruits}, topping={self.topping.name if self.topping else None})"
 
 
+# Тестування
 if __name__ == "__main__":
-    attraction = AttractionQueue()
+    apple = Fruit("Apple", "Medium", "Red", Taste.SWEET)
+    lemon = Fruit("Lemon", "Small", "Yellow", Taste.SOUR)
+    banana = Fruit("Banana", "Large", "Yellow", Taste.SWEET)
 
-    attraction.arrive("Олена") 
-    attraction.arrive("Петро") 
-    attraction.arrive("Марія") 
-    attraction.arrive("Іван")
-    attraction.arrive("Софія")  
+    salad = FruitSalad()
+    salad.add_fruit(apple)
+    salad.add_fruit(lemon)
+    salad.add_fruit(banana)
 
-    attraction.show_queue()
+    salad.choose_topping()
+    salad.mix_ingredients()
+
+    print(salad)
+
+  

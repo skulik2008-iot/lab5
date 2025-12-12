@@ -1,0 +1,74 @@
+import random
+from enum import Enum
+
+
+class Taste(Enum):
+    SWEET = "Sweet"
+    SOUR = "Sour"
+    NEUTRAL = "Neutral"
+
+
+class Fruit:
+    def __init__(self, name: str, size: str, color: str, taste: Taste):
+        self.name = name
+        self.size = size
+        self.color = color
+        self.taste = taste
+
+    def __repr__(self):
+        return f"{self.name} ({self.color}, {self.size}, {self.taste.value})"
+
+# Enum Topping з полем taste
+class Topping(Enum):
+    HONEY = Taste.SWEET
+    LEMON_JUICE = Taste.SOUR
+    YOGURT = Taste.NEUTRAL
+    CHOCOLATE = Taste.SWEET
+
+# Клас FruitSalad
+class FruitSalad:
+    def __init__(self):
+        self.fruits = []
+        self.topping = None
+
+    def add_fruit(self, fruit: Fruit):
+        self.fruits.append(fruit)
+
+    # Метод вибору топінгу залежно від смаку фруктів
+    def choose_topping(self):
+        sweet_count = sum(1 for f in self.fruits if f.taste == Taste.SWEET)
+        sour_count = sum(1 for f in self.fruits if f.taste == Taste.SOUR)
+        neutral_count = sum(1 for f in self.fruits if f.taste == Taste.NEUTRAL)
+
+        if sweet_count > sour_count and sweet_count > neutral_count:
+            self.topping = Topping.CHOCOLATE
+        elif sour_count > sweet_count and sour_count > neutral_count:
+            self.topping = Topping.LEMON_JUICE
+        else:
+            self.topping = Topping.YOGURT
+
+    # Метод перемішування інгредієнтів
+    def mix_ingredients(self):
+        random.shuffle(self.fruits)
+
+    def __repr__(self):
+        return f"FruitSalad(fruits={self.fruits}, topping={self.topping.name if self.topping else None})"
+
+
+# Тестування
+if __name__ == "__main__":
+    apple = Fruit("Apple", "Medium", "Red", Taste.SWEET)
+    lemon = Fruit("Lemon", "Small", "Yellow", Taste.SOUR)
+    banana = Fruit("Banana", "Large", "Yellow", Taste.SWEET)
+
+    salad = FruitSalad()
+    salad.add_fruit(apple)
+    salad.add_fruit(lemon)
+    salad.add_fruit(banana)
+
+    salad.choose_topping()
+    salad.mix_ingredients()
+
+    print(salad)
+
+  
